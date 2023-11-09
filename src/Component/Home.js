@@ -3,16 +3,22 @@ import BlogList from "./BlogList";
 
 const Home = () => {
   // let name = 'mario';
-  const [blogs, setBlogs] = useState([
-    { title: "My new website", body: "lorem ipsum...", author: "mario", id: 1 },
-    { title: "Welcome party!", body: "lorem ipsum...", author: "yoshi", id: 2 },
-    {
-      title: "Web dev top tips",
-      body: "lorem ipsum...",
-      author: "mario",
-      id: 3,
-    },
-  ]);
+
+  // const [blogs, setBlogs] = useState([
+  //   { title: "My new website", body: "lorem ipsum...", author: "mario", id: 1 },
+  //   { title: "Welcome party!", body: "lorem ipsum...", author: "yoshi", id: 2 },
+  //   {
+  //     title: "Web dev top tips",
+  //     body: "lorem ipsum...",
+  //     author: "mario",
+  //     id: 3,
+  //   },
+  // ]);
+
+  const [blogs, setBlogs] = useState(null);
+  const [name, setName] = useState(null);
+  const [isPending, setIsPending] = useState(true);
+  const [error, setError] = useState(null);
   // const [age,setAge] = useState(2523);
   // const handleClick =() =>{
   //     console.log(name);s
@@ -24,17 +30,47 @@ const Home = () => {
   //     console.log('hello' + name,e.target);
   // }
 
-  const handleDelete = (id ) => {
-    const newBlogs = blogs.filter((blog) => blog.id !== id);
-    // filter blog
-    setBlogs(newBlogs);
-    // render new blogs
-}
+  //   const handleDelete = (id ) => {
+  //     const newBlogs = blogs.filter((blog) => blog.id !== id);
+  //     // filter blog
+  //     setBlogs(newBlogs);
+  //     // render new blogs
+  // }
 
-  useEffect(() =>{
-    console.log("useEffect trigged");
-    console.log(blogs);
-  });
+  useEffect(() => {
+    setTimeout(() => {
+      fetch("http://localhost:8000/blogs")
+        .then((res) => {
+          console.log("This is res",res);
+          if(!res.ok){
+            throw Error("could not fetch the data for that resource");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          console.log(data);
+          setBlogs(data);
+          setIsPending(false);
+          setError(null);
+        })
+        .catch(err =>{
+          // console.log(err.message);
+          setError(err.message);
+          setIsPending(false);
+        })
+    }, 1000);
+  }, []);
+
+  //   fetch('http://localhost:8000/blogs').then(res =>{
+  //     return res.json();
+  //   })
+  //   .then(data => {
+  //     console.log(data);
+  //     setBlogs(data);
+  //     setIsPending(false);
+  //   })
+  // },[]);
+  // [] empty dependency only allow useEffect run for first render.
 
   return (
     <div className="home">
@@ -44,7 +80,13 @@ const Home = () => {
         <button onClick ={(e) => 
             handleClickAgian("mario",e)
             }>Click Me Agian</button> */}
-      <BlogList blogs={blogs} title="All Blogs!" handleDelete={handleDelete}/>
+      {error && <div>{error}</div>}
+      {isPending && <div> Loading...</div>}
+      {blogs && <BlogList blogs={blogs} title="All Blogs!" />}
+      {/* ^^ allow passing null */}
+
+      {/* <button onClick={() => setName("luigei")}> Change Name</button>
+      <h2>{name}</h2> */}
       {/* <BlogList
         blogs={blogs.filter((blog) => blog.author === "mario")}
         title="Mario Blogs!"
