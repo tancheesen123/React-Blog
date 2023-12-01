@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import BlogList from "./BlogList";
+import useFetch from "./useFetch";
 
 const Home = () => {
   // let name = 'mario';
@@ -14,11 +15,6 @@ const Home = () => {
   //     id: 3,
   //   },
   // ]);
-
-  const [blogs, setBlogs] = useState(null);
-  const [name, setName] = useState(null);
-  const [isPending, setIsPending] = useState(true);
-  const [error, setError] = useState(null);
   // const [age,setAge] = useState(2523);
   // const handleClick =() =>{
   //     console.log(name);s
@@ -36,30 +32,34 @@ const Home = () => {
   //     setBlogs(newBlogs);
   //     // render new blogs
   // }
+  //command to run json-server
+  ///////////////////////////////////////////////////////////////////
 
-  useEffect(() => {
-    setTimeout(() => {
-      fetch("http://localhost:8000/blogs")
-        .then((res) => {
-          console.log("This is res",res);
-          if(!res.ok){
-            throw Error("could not fetch the data for that resource");
-          }
-          return res.json();
-        })
-        .then((data) => {
-          console.log(data);
-          setBlogs(data);
-          setIsPending(false);
-          setError(null);
-        })
-        .catch(err =>{
-          // console.log(err.message);
-          setError(err.message);
-          setIsPending(false);
-        })
-    }, 1000);
-  }, []);
+  // npx json-server --watch data/db.json --port 8000
+
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     fetch("http://localhost:8000/blogs")
+  //       .then((res) => {
+  //         console.log("This is res",res);
+  //         if(!res.ok){
+  //           throw Error("could not fetch the data for that resource");
+  //         }
+  //         return res.json();
+  //       })
+  //       .then((data) => {
+  //         console.log(data);
+  //         setBlogs(data);
+  //         setIsPending(false);
+  //         setError(null);
+  //       })
+  //       .catch(err =>{
+  //         // console.log(err.message);
+  //         setError(err.message);
+  //         setIsPending(false);
+  //       })
+  //   }, 1000);
+  // }, []);
 
   //   fetch('http://localhost:8000/blogs').then(res =>{
   //     return res.json();
@@ -71,6 +71,9 @@ const Home = () => {
   //   })
   // },[]);
   // [] empty dependency only allow useEffect run for first render.
+
+
+  const { data:blogs, isPending, error } = useFetch("http://localhost:8000/blogs");
 
   return (
     <div className="home">
